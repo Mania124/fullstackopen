@@ -1,5 +1,6 @@
 const Note = ({ note }) => {
-  return <li>{note.content}</li>
+    // console.log('Note component rendered with note:', note.id)
+    return <li>{note.content}</li>
 }
 
 export default Note
