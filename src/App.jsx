@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import Note from './components/Note'
-import axios from 'axios'
+// import axios from 'axios'
+import noteService from './services/notes'
 
 
 const App = () => {
@@ -10,11 +11,10 @@ const App = () => {
 
   const hook = () => {
   console.log('effect')
-  axios
-    .get('http://localhost:3001/notes')
-    .then(response => {
-      console.log('promise fulfilled')
-      setNotes(response.data)
+  noteService
+    .getAll()
+    .then(initiallNotes=> {
+      setNotes(initiallNotes)
     })
   }
   useEffect(hook, [])
@@ -25,8 +25,16 @@ const App = () => {
     const note = notes.find(n => n.id === id)
     const changedNote = { ...note, important: !note.important }
 
-    axios.put(url, changedNote).then(response => {
-      setNotes(notes.map(note => note.id === id ? response.data : note))
+    noteService
+    .update(url, changedNote)
+    .then(returnedNote => {
+      setNotes(notes.map(note => note.id === id ? returnedNote : note))
+    })
+    .catch(error => {
+      alert(
+        `the note ${note.content} was already deleted from the server`
+      )
+      setNotes(notes.filter(n => n.id != id))
     })
   }
   const addNote = event => {
@@ -37,10 +45,11 @@ const App = () => {
   }
 
 
-  axios
-    .post('http://localhost:3001/notes', noteObject)
-    .then(response => {
-            setNotes(notes.concat(response.data))      
+  
+    noteService
+    .create(noteObject)
+    .then(returnedNote => {
+            setNotes(notes.concat(returnedNote))      
             setNewNote('')
     })
 }
