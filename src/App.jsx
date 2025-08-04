@@ -34,6 +34,7 @@ const App = () => {
       alert(
         `the note ${note.content} was already deleted from the server`
       )
+      console.log(error)
       setNotes(notes.filter(n => n.id != id))
     })
   }
